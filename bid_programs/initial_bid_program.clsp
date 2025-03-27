@@ -1,0 +1,11 @@
+(mod (INITIAL_AMOUNT INNER_BID_PROGRAM prev amount)
+    (include auction_truths.clsp)
+
+    (if (= (bid_index prev) 0)
+        (if (> INITIAL_AMOUNT amount)
+            (x)
+            ()
+        )
+        (a INNER_BID_PROGRAM prev amount)
+    )
+)

@@ -1,0 +1,8 @@
+(mod (INCREASE_AMOUNT prev amount)
+    (include auction_truths.clsp)
+
+    (if (> (* INCREASE_AMOUNT (bid_index prev)) (- amount (bid_amount prev)))
+        (x)
+        (bid_amount prev)
+    )
+)
