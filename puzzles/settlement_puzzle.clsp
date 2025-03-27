@@ -1,0 +1,3 @@
+(mod (
+    (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+    ))

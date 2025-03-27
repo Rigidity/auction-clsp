@@ -1,4 +1,6 @@
 (mod (
-        Current_State
+        ROYALTY_LIST
+        (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+        
     )
 )

@@ -1,0 +1,26 @@
+(mod (
+        RESERVE_FULL_PUZZLE_HASH
+        SETTLEMENT_PUZZLE_HASH
+        SELF_HASH
+        ; 2nd curry
+        STATE ; (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+        reserve_parent
+        new_bid_or_settlement_puzzle
+        new_king_or_settlement_solution
+    )
+
+    (include sha256tree.clib)
+    (include condition_codes.clib)
+
+    (defun-inline main (reserve_base_conditions))
+
+    (if reserve_parent
+    
+        ; else - auction over
+        (if (= SETTLEMENT_PUZZLE_HASH (sha256tree new_bid_or_settlement_puzzle))
+            (a new_bid_or_settlement_puzzle (c STATE new_king_or_settlement_solution))
+            ; else
+            (x)
+        )
+    )
+)
