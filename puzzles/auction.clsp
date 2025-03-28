@@ -20,7 +20,7 @@
 
     (defun-inline main (
         (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
-        (new_king_committed_amount new_auction_end new_king_bid new_current_king reserve_base_conditions)
+        (new_state . reserve_base_conditions)
     )
         (list
             (list ASSERT_BEFORE_SECONDS_ABSOLUTE Auction_End) ; auction still running
@@ -29,13 +29,7 @@
                 1
                 (curry_hashes_inline SELF_HASH
                     (sha256 1 SELF_HASH)
-                    (sha256tree (list
-                        new_king_committed_amount
-                        new_auction_end
-                        new_king_bid
-                        new_current_king
-                        (+ Bid_Index 1)
-                    ))
+                    (sha256tree new_state)
                 )
                 (list HINT)
             ) ; re-create self
