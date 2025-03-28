@@ -1,0 +1,29 @@
+; premiums do not affect the remaining bid amount
+(mod (
+    PREMIUM_LIST ; (list (premium . recipient))
+    INNER_LEVEL
+    Bid_Amount
+    Remaining_Bid_Amount
+    inner_level_solution
+)
+    (defun-inline create_coin_cond ((premium . recipient))
+        (list CREATE_COIN recipient premium (list recipient))
+    )
+
+    (defun pay_premiums (Remaining_Bid_Amount premium_list inner_output)
+        (if premium_list
+            (c
+                (create_coin_cond Remaining_Bid_Amount (f premium_list))
+                (pay_premiums Remaining_Bid_Amount (r premium_list) inner_output)
+            )
+            ; else
+            inner_output
+        )
+    )
+
+    (pay_premiums
+        Remaining_Bid_Amount
+        PREMIUM_LIST
+        (a INNER_LEVEL (list Bid_Amount Remaining_Bid_Amount inner_level_solution))
+    )
+)

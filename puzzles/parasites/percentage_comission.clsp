@@ -1,7 +1,0 @@
-; sends remaining amount to auction starter
-(mod (
-    AUCTION_STARTER
-    Bid_Amount
-    Conditions_So_Far
-    solution ; unused
-))
