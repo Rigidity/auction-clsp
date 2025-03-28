@@ -10,6 +10,7 @@
         (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index) ; State
         (new_bid . new_king) ; solution
     )
+    (include condition_codes.clib)
 
     (c
         (list 
