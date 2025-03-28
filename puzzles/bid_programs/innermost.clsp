@@ -2,6 +2,9 @@
 ; this is a bid program - it gets the current State as a truth
 ; and is expected to output:
 ; (c new_state base_reserve_conditions)
+
+; idea is to wrap this inside 'filters' that can add conditions
+
 (mod (
         TRANSFORM_BID_AMOUNT
         (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index) ; State
