@@ -1,3 +1,7 @@
+; settlement_puzzle.clsp by yakuhito
+; this is the puzzle that can always run in an auction
+; it make sure the auction ended, distributes the proceeds, and transfers the singleton to the king
+
 (mod (
         TOP_LEVEL
         RESERVE_FULL_PUZZLE_HASH
@@ -6,6 +10,7 @@
         top_level_solution
     )
     (include sha256tree.clib)
+    (include condition_codes.clib)
 
     (list 
         (list
