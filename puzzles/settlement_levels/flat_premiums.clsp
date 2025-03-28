@@ -1,4 +1,7 @@
+; flat_premiums.clsp by yakuhito
 ; premiums do not affect the remaining bid amount
+; flat premiums are static - Bid Amount doesn't matter
+
 (mod (
     PREMIUM_LIST ; (list (premium . recipient))
     INNER_LEVEL
@@ -6,6 +9,8 @@
     Remaining_Bid_Amount
     inner_level_solution
 )
+    (include condition_codes.clib)
+    
     (defun-inline create_coin_cond ((premium . recipient))
         (list CREATE_COIN recipient premium (list recipient))
     )

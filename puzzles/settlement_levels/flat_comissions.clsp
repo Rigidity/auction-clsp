@@ -1,4 +1,7 @@
-; comissions affect the remaining bid amount
+; flat_comissions.clsp by yakuhito
+; commissions affect the remaining bid amount
+; flat comissions are static - Bid Amount doesn't matter
+
 (mod (
     COMISSION_LIST ; (list (comission . recipient))
     INNER_LEVEL
@@ -6,6 +9,8 @@
     Remaining_Bid_Amount
     inner_level_solution
 )
+    (include condition_codes.clib)
+    
     (defun pay_comissions (INNER_LEVEL inner_level_solution Bid_Amount Remaining_Bid_Amount remaining_list)
         (if premium_list
             (c 
@@ -21,7 +26,7 @@
         )
     )
 
-    (pay_premiums
+    (pay_comissions
         INNER_LEVEL inner_level_solution Bid_Amount Remaining_Bid_Amount COMISSION_LIST
     )
 )

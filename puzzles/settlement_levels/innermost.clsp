@@ -1,4 +1,6 @@
-; auction starter gets whatever's left
+; innermost.clsp by yakuhito
+; this level distributes the remaining bid amount to the person that created the bid
+
 (mod (
     AUCTION_STARTER
     Bid_Amount
