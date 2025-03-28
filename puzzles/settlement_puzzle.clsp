@@ -5,7 +5,7 @@
 (mod (
         TOP_LEVEL
         RESERVE_FULL_PUZZLE_HASH
-        (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+        (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index) ; State truth
         reserve_parent_id
         top_level_solution
     )
