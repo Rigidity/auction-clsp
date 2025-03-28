@@ -1,0 +1,31 @@
+(mod (
+        BID_TRANSFORM_PROGRAM
+        Current_State ; (King_Committed_Amount King_Bid Current_King Bid_Index Auction_End)
+        new_bid
+        new_king
+    )
+
+    (defun-inline main (
+        (King_Committed_Amount Current_King Bid_Index Auction_End)
+        (amount_to_commit new_auction_end base_conditions)
+    )
+        (c
+            (list
+                amount_to_commit
+                new_bid
+                new_king
+                (+ Bid_Index 1)
+                new_auction_end
+            ) ; new state
+            (c
+                (list ASSERT_TIME_BEFORE Auction_End)
+                base_conditions
+            ) ; conditions
+        )
+    )
+
+    (main
+        Current_State
+        (a BID_TRANSFORM_PROGRAM (list Current_State new_bid new_bid_puzzle_hash))
+    )
+)

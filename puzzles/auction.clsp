@@ -1,6 +1,62 @@
+; auction.clsp by yakuhito
+; inner puzzle that sits inside the auction singleton while the auction is active
+
 (mod (
-        BID_PROGRAM ; Controls the validity of bids and how much gets refunded to the previous bidder
-        SELF_HASH ; We pre-curry the above arguments into the mod hash since they don't change
+        RESERVE_FULL_PUZZLE_HASH
+        RESERVE_INNER_PUZZLE_HASH
+        SETTLEMENT_PUZZLE_HASH ; see settlement_puzzle.clsp
+        BID_PROGRAM
+        HINT ; launcher id
+        SELF_HASH
+        ; 2nd curry
+        State ; (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+        reserve_parent_or_0
+        . solution
     )
 
+    (include curry.clib)
+    (include sha256tree.clib)
+    (include condition_codes.clib)
+
+    (defun-inline main (
+        (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index)
+        (new_state . reserve_base_conditions)
+    )
+        (list
+            (list ASSERT_BEFORE_SECONDS_ABSOLUTE Auction_End) ; auction still running
+            (list
+                CREATE_COIN
+                1
+                (curry_hashes_inline SELF_HASH
+                    (sha256 1 SELF_HASH)
+                    (sha256tree new_state)
+                )
+                (list HINT)
+            ) ; re-create self
+            (list
+                SEND_MESSAGE
+                23 ; puzzle - coin
+                (sha256tree (c 
+                    1 ; q . from (q . conditions)
+                    (c 
+                        (list CREATE_COIN RESERVE_INNER_PUZZLE_HASH new_king_committed_amount (list RESERVE_INNER_PUZZLE_HASH))
+                        reserve_base_conditions
+                    )
+                    )
+                ) ; delegated puzzle hash
+                (coinid reserve_parent_or_0 RESERVE_FULL_PUZZLE_HASH King_Committed_Amount) ; receiver coin id
+            ) ; spend reserve
+        )
+    )
+
+    (if reserve_parent_or_0
+        (main State (a BID_PROGRAM State solution))
+        ; else - reserve_parent_or_0 = 0 -> auction over
+        ; solution is (c settlement_puzzle_reveal settlement_puzzle_solution)
+        (if (= SETTLEMENT_PUZZLE_HASH (sha256tree (f solution)))
+            (a (f solution) (c State (r solution)))
+            ; else
+            (x)
+        )
+    )
 )

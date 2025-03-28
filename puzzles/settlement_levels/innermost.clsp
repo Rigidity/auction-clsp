@@ -1,0 +1,15 @@
+; innermost.clsp by yakuhito
+; this level distributes the remaining bid amount to the person that created the bid
+
+(mod (
+    AUCTION_STARTER
+    Bid_Amount
+    Remaining_Bid_Amount
+    solution ; unused
+)
+    (include condition_codes.clib)
+
+    (list
+        (list CREATE_COIN AUCTION_STARTER Remaining_Bid_Amount (list AUCTION_STARTER))
+    )
+)

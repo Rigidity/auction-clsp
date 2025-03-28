@@ -1,0 +1,30 @@
+; inenrmost.clsp by yakuhito
+; this is a bid program - it gets the current State as a truth
+; and is expected to output:
+; (c new_state base_reserve_conditions)
+
+; idea is to wrap this inside 'filters' that can add conditions
+
+(mod (
+        TRANSFORM_BID_AMOUNT
+        (King_Committed_Amount Auction_End King_Bid Current_King Bid_Index) ; State
+        (new_bid . new_king) ; solution
+    )
+    (include condition_codes.clib)
+
+    (c
+        (list 
+            (a TRANSFORM_BID_AMOUNT new_bid)
+            Auction_End
+            (if (> new_bid King_Bid) new_bid (x))
+            new_king
+            (+ Bid_Index 1)
+        ) ; new state
+        (list
+            (list
+                CREATE_COIN_ANNOUNCEMENT
+                (sha256 2 (sha256 1 new_bid) (sha256 1 new_king)) ; (sha256tree (c new_bid new_king))
+            ) ; would not need this with create_coin asserts... just sayin'
+        ) ; base reserve conditions
+    )
+)

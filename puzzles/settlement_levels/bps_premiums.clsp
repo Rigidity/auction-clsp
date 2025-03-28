@@ -1,0 +1,34 @@
+; bps_premiums.clsp by yakuhito
+; premiums do not affect the remaining bid amount
+; these premiums are in bps - they depend on the bid amount
+
+(mod (
+    PREMIUM_LIST ; (list (bps . recipient))
+    INNER_LEVEL
+    Bid_Amount
+    Remaining_Bid_Amount
+    inner_level_solution
+)
+    (include condition_codes.clib)
+    
+    (defun-inline create_coin_cond (bid_amount (bps . recipient))
+        (list CREATE_COIN recipient (/ (* bps bid_amount) 10000) (list recipient))
+    )
+
+    (defun pay_premiums (Bid_Amount premium_list inner_output)
+        (if premium_list
+            (c
+                (create_coin_cond Bid_Amount (f premium_list))
+                (pay_premiums Bid_Amount (r premium_list) inner_output)
+            )
+            ; else
+            inner_output
+        )
+    )
+
+    (pay_premiums
+        Remaining_Bid_Amount
+        PREMIUM_LIST
+        (a INNER_LEVEL (list Bid_Amount Remaining_Bid_Amount inner_level_solution))
+    )
+)

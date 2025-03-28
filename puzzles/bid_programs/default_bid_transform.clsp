@@ -1,0 +1,25 @@
+; default_bid_transform.clsp by yakuhito
+; this program receives a bid and returns the commited amount
+(mod (
+        MIN_BID
+        FLAT_FEE ; sum(comissions)
+        BPS_PERCENTS ; list(comissions_bps)
+        . bid
+    )
+    (defun add_comissions (bid comissions_bps)
+        (if comissions_bps
+            (+
+                (/ (* (f comissions_bps) bid) 10000)
+                (add_comissions bid (r comissions_bps))
+            )
+            ; else
+            bid
+        )
+    )
+
+    (if (> MIN_BID bid)
+        (x)
+        ; else
+        (+ FLAT_FEE (add_comissions bid BPS_PERCENTS))
+    )
+)
