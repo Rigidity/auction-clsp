@@ -149,7 +149,7 @@ export fn settle_action(
     let unlock = SendMessage {
         receiver: [underlying_coin_id],
         message: winning_bid.puzzle_hash,
-        mode: 63,
+        mode: SENDER_COIN + RECEIVER_COIN,
     };
 
     let conditions = [unlock, sale_payment, ...settlement_conditions];
