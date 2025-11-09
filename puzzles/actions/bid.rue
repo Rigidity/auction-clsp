@@ -1,0 +1,53 @@
+import super::state::*;
+import super::programs::*;
+
+// The bid action allows anyone to place a new bid on the underlying.
+// If the bid meets the requirements, it will replace and refund the previous bidder.
+// This action cannot be run after the auction is over.
+
+struct BidSolution {
+    amount: Int,
+    puzzle_hash: Bytes32,
+    ...bid_solution: Any,
+}
+
+export fn bid_action(
+    bid_validator: BidValidator,
+    bid_premium_calculator: BidPremiumCalculator,
+    state: AuctionState,
+    solution: BidSolution,
+) -> AuctionOutput {
+    inline let {
+        reserve_amount: previous_reserve_amount,
+        winning_bid: previous_bid
+    } = state.persistent;
+
+    let new_bid = Bid {
+        amount: solution.amount,
+        puzzle_hash: solution.puzzle_hash,
+        index: previous_bid.index + 1,
+    };
+
+    let bid_conditions = bid_validator(previous_bid, new_bid, ...solution.bid_solution);
+
+    let refund = ReserveCondition {
+        condition: CreateCoin {
+            puzzle_hash: previous_bid.puzzle_hash,
+            amount: previous_reserve_amount,
+            memos: Memos {
+                value: [previous_bid.puzzle_hash],
+            },
+        },
+    };
+
+    AuctionOutput {
+        state: AuctionState {
+            ephemeral: state.ephemeral,
+            persistent: PersistentState {
+                reserve_amount: new_bid.amount + bid_premium_calculator(new_bid),
+                winning_bid: new_bid,
+            },
+        },
+        conditions: [refund, ...bid_conditions],
+    }
+}

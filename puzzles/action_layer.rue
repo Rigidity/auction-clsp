@@ -1,0 +1,16 @@
+export struct State<E, P> {
+    ephemeral: E | nil,
+    ...persistent: P,
+}
+
+export struct Output<E, P> {
+    state: State<E, P>,
+    ...conditions: List<ActionCondition>,
+}
+
+export struct ReserveCondition {
+    opcode = -41,
+    ...condition: Condition,
+}
+
+export type ActionCondition = Condition | ReserveCondition;

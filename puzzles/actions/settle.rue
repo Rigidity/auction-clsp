@@ -1,0 +1,61 @@
+import super::state::*;
+import super::programs::*;
+
+// The settle action can be run any time after the auction is over.
+// The conditions for the auction ending are also enforced by the bid action,
+// so it's not required to run this action in order to protect the underlying from other bidders.
+// Essentially, whoever has the winning bid at the time of settlement will have custody of the underlying.
+
+struct SettleSolution {
+    ...settlement_solution: Any,
+}
+
+export fn settle_action(
+    sale_puzzle_hash: Bytes32,
+    premium_puzzle_hash: Bytes32,
+    underlying_coin_id: Bytes32,
+    settlement_validator: SettlementValidator,
+    bid_premium_calculator: BidPremiumCalculator,
+    state: AuctionState,
+    solution: SettleSolution,
+) -> AuctionOutput {
+    inline let { winning_bid } = state.persistent;
+
+    let settlement_conditions = settlement_validator(winning_bid, ...solution.settlement_solution);
+    let buyers_premium = bid_premium_calculator(winning_bid);
+
+    let sale_payment = ReserveCondition {
+        condition: CreateCoin {
+            puzzle_hash: sale_puzzle_hash,
+            amount: winning_bid.amount,
+            memos: Memos {
+                value: [sale_puzzle_hash],
+            },
+        },
+    };
+
+    let unlock = SendMessage {
+        receiver: [underlying_coin_id],
+        message: winning_bid.puzzle_hash,
+        mode: SENDER_COIN + RECEIVER_COIN,
+    };
+
+    let conditions = [unlock, sale_payment, ...settlement_conditions];
+    
+    let conditions = inline if buyers_premium > 0 {
+        let premium_payment = ReserveCondition {
+            condition: CreateCoin {
+                puzzle_hash: premium_puzzle_hash,
+                amount: buyers_premium,
+                memos: Memos {
+                    value: [premium_puzzle_hash],
+                },
+            },
+        };
+        [premium_payment, ...conditions]
+    } else {
+        conditions
+    };
+    
+    AuctionOutput { state, conditions }
+}
