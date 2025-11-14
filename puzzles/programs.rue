@@ -33,5 +33,3 @@ export fn default_settlement_validator(
 ) -> List<Condition> {
     [AssertSecondsAbsolute { seconds: expiration_seconds }]
 }
-
-
