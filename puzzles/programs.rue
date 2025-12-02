@@ -1,0 +1,35 @@
+import state::*;
+
+// These programs are used to make the behavior of auctions more modular,
+// enabling configuration without needing to change the core logic of the auction.
+// However, it's a balance between flexibility and complexity, so they are starting out simple.
+
+export type BidValidator = fn(previous_bid: Bid, new_bid: Bid, ...solution: Any) -> List<Condition>;
+export type BidPremiumCalculator = fn(bid: Bid) -> Int;
+export type SettlementValidator = fn(winning_bid: Bid, ...solution: Any) -> List<Condition>;
+
+export fn default_bid_validator(
+    expiration_seconds: Int,
+    minimum_amount: Int,
+    minimum_increase: Int,
+    previous_bid: Bid,
+    new_bid: Bid,
+) -> List<Condition> {
+    let increase = new_bid.amount - previous_bid.amount;
+    assert new_bid.amount > minimum_amount - 1 && increase > minimum_increase - 1;
+    [AssertBeforeSecondsAbsolute { seconds: expiration_seconds }]
+}
+
+export fn default_bid_premium_calculator(
+    premium_basis_points: Int,
+    bid: Bid,
+) -> Int {
+    bid.amount * premium_basis_points / 10000
+}
+
+export fn default_settlement_validator(
+    expiration_seconds: Int,
+    _winning_bid: Bid,
+) -> List<Condition> {
+    [AssertSecondsAbsolute { seconds: expiration_seconds }]
+}

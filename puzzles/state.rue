@@ -1,0 +1,17 @@
+export action_layer::*;
+
+export type AuctionState = State<EphemeralState, PersistentState>;
+export type AuctionOutput = Output<EphemeralState, PersistentState>;
+
+export struct EphemeralState {}
+
+export struct PersistentState {
+    reserve_amount: Int,
+    winning_bid: Bid,
+}
+
+export struct Bid {
+    amount: Int,
+    index: Int,
+    puzzle_hash: Bytes32,
+}

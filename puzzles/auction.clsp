@@ -1,6 +1,0 @@
-(mod (
-        BID_PROGRAM ; Controls the validity of bids and how much gets refunded to the previous bidder
-        SELF_HASH ; We pre-curry the above arguments into the mod hash since they don't change
-    )
-
-)
